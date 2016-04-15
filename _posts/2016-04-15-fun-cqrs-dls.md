@@ -70,7 +70,9 @@ def acceptsCommand(handler: PartialFunction[(Aggregate, Command), Event]))
 def acceptsCommandAsync(handler: PartialFunction[(Aggregate, Command), Future[Event]]))
 ...
 ```
-This first version worked as expected and gave us the possibility to declare the behavior of an aggregate they way we thought we should do. However, it rapidly grew to huge blocks of PartialFunctions that we hard to follow and make a good picture of all possible cases we were covering.
+Behind the scenes we where lifting all these ParticalFunctions to `PartialFunction[T, Future[List[Event]]]))` composing them with `orElse` and building a huge PF that represented the Behavior.
+
+This first version worked as expected and gave us the possibility to declare the behavior of an aggregate they way we thought we should do. However, it rapidly grew to huge blocks of PartialFunctions that were hard to follow and have a good picture of all possible cases we were covering.
 
 At some point this same API was refactored to use the Magnet Pattern. As such we could by-pass the type erasure and have less method variations. We end up with basically 2 kinds of command handlers and a bunch of Magnets. 
 
@@ -103,9 +105,9 @@ behaviorFor[MyAggregate]
 
 ## Declarative and Composable Behavior
 
-After collecting feedback from different kind of people (Scala devs, Java devs, DDD experts) we came to the conclusion that the API was actually quite heavy, boring and hard to understand. Specially when the aggregate had to react to several commands and events. 
+After collecting feedback from different kind of people (Scala devs, Java devs, DDD experts) we came to the conclusion that the API was actually quite heavy, too technical, boring and hard to understand. Specially when the aggregate had to react to several commands and events. 
 
-We start to look for something that could be composable and clearly express the actions (command handlers and event handlers) that were applicable to a given state of the aggregate. 
+We start to search for something that could be composable and clearly express the actions (command handlers and event handlers) that were applicable to a given state of the aggregate. 
 
 Since we were already using the term "Behavior" it seemed to us a good idea to read the definition of the word to see if we could get some expiration. 
 
@@ -113,7 +115,7 @@ The English Webster Dictionary defines the worlds **Bevahior** as such...
 > "The way in which an animal or person behaves in response to a particular situation or stimulus"
 >  - Webster Dictionary 
 
-If we bring it to a CQRS context, we can say that the behavior of a model (write-model) is the sum of all actions it will perform given a stimulus (commands) and situation (model current state).
+If we bring it to a CQRS context, we can say that the behavior of a model (write-model) is the sum of all actions it will perform given a stimulus (commands / events) and a particular situation (model current state).
 
 So, depending on the situation we must have a different set of actions. It goes without saying that we may perform the same action in more than one situation which bring us to the inception that actions must be reusable. 
 
@@ -124,7 +126,7 @@ type Behavior = PartialFunction[State[A], Actions[A]])
 ```
 `State` works like Option, it can be Uninitialized or Initialized. `Actions` carries the Command Handlers and Event Handlers.
 
-And `Action` we can as following:
+And an `Action` is defined as following:
 
 ```scala
 // using example from Fun.CQRS sample project
@@ -158,4 +160,6 @@ def behavior(lotteryId: LotteryId): Behavior[Lottery] = {
         lottery.runTheLottery
   }
 ```
+Actions can be composed and reused as we can see from the `acceptParticipants` actions. We may accept participants in two situations (or states), when if we don't have yet any participant and when we have already some but the lottery is not run yet.
 
+(work in progress...)
