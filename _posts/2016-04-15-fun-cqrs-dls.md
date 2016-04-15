@@ -53,7 +53,7 @@ Given the specifications above we came up with the following functions signature
 We can define the behavior of an aggregate as the sum of all functions (command handlers and event handlers) that are defined for it. As such it was clear for us that we need a way to declare all possible command handlers and event handlers for a given aggregate and make sure that they were available and applicable depending on the internal state of the aggregate.
 
 ## Declarative Behavior
-Our first trial was to define them as different PartialFunctions that we could lift to a command type (Future[List[Event]]) and compose them all to build the final behavior.
+Our first trial was to define them as different PartialFunctions that we could lift to a common type (Future[List[Event]]) and compose them all to build the final behavior.
 
 This led was to the definition of the following method that we could use to pass the PartialFunction and compose the final behavior.
 
