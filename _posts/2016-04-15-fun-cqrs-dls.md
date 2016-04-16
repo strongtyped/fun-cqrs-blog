@@ -70,7 +70,7 @@ def acceptsCommand(handler: PartialFunction[(Aggregate, Command), Event]))
 def acceptsCommandAsync(handler: PartialFunction[(Aggregate, Command), Future[Event]]))
 ...
 ```
-Behind the scenes we where lifting all these ParticalFunctions to `PartialFunction[T, Future[List[Event]]]))` composing them with `orElse` and building a huge PF that represented the Behavior.
+Behind the scenes we were lifting all these ParticalFunctions to `PartialFunction[T, Future[List[Event]]]))` composing them with `orElse` and building a huge PF that represented the Behavior.
 
 This first version worked as expected and gave us the possibility to declare the behavior of an aggregate they way we thought we should do. However, it rapidly grew to huge blocks of PartialFunctions that were hard to follow and have a good picture of all possible cases we were covering.
 
