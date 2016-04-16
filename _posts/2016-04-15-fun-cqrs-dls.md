@@ -1,3 +1,8 @@
+---
+layout: post
+title: "A CQRS Behavior DSL"
+tags: fun-cqrs, dsl
+---
 
 #  A CQRS Behavior DSL
 
